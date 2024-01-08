@@ -4,6 +4,10 @@ export default {
     about: { path: '/about' },
   },
   external: {},
-  api: {},
+  api: {
+    auth: {
+      login: '',
+    },
+  },
   email: {},
 };

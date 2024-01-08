@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import constants from '../constants';
 import urls from '../urls';
 import Emitter from '../emitter';
+import localeErrorMsg from 'src/locale/localeErrorMsg';
 
 export const authenticationFailed = 'AuthenticationFailed';
 export const clientTokenStorageId = 'clientTokens';
@@ -48,7 +49,7 @@ const timeout: number = parseInt(constants.API.timeout, 10);
 // eslint-disable-next-line no-secrets/no-secrets
 // Todo: AxiosRequestConfig<any> 대신 제네릭으로 주입하는 방법
 const requestAPI: AxiosInstance = axios.create({
-  baseURL: `${API.CENTRAL.endPoint}/api/v2`,
+  baseURL: `${API.host}/api/${API.host}`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -80,15 +81,6 @@ requestAPI.interceptors.request.use(
       const userAgent = await getUserAgent();
       configReq.headers['User-Agent'] = userAgent;
 
-      if (config.isReviewer) {
-        configReq.baseURL = `${API.CENTRAL.qa}/api/${API.CENTRAL.version}`;
-      }
-
-      if (config.useAuth) {
-        const userToken = await handleAccessToken.get();
-        configReq.headers.Authorization = `Bearer ${userToken}`;
-      }
-
       if (config.useFormData) {
         configReq.headers['Content-Type'] = 'multipart/form-data';
       }
@@ -112,7 +104,7 @@ requestAPI.interceptors.request.use(
 
 // Response interceptor
 requestAPI.interceptors.response.use(
-  async (res: AxiosResponse<ResUserVerification>) => {
+  async (res: AxiosResponse) => {
     try {
       if (isNotProduction) {
         console.log('requestAPI - interceptors.res sent res: ', res);

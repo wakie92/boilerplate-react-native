@@ -13,7 +13,7 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "typeRoots": ["./node_modules/@types", "./src/types/"],
-    "types": ["styled-components-react-native", "node"],
+    "types": ["node"],
     "paths": {
       "src/redux/modules/*": ["src/redux/modules/*"],
       "src/contexts/*": ["src/contexts/*"],
