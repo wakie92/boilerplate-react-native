@@ -1,11 +1,14 @@
+import ENV from 'react-native-config';
+
 export default {
   NO_DATA: 'No Data',
-  DOMAIN: process.env.NEXT_PUBLIC_DOMAIN,
-  ENVIRONMENT: process.env.ENVIRONMENT,
+  DOMAIN: ENV.APP_PUBLIC_DOMAIN as string,
+  ENVIRONMENT: ENV.APP_ENVIRONMENT as string,
+
   API: {
-    host: process.env.NEXT_PUBLIC_API_HOST,
-    timeout: process.env.NEXT_PUBLIC_API_TIMEOUT,
-    version: 'v1',
+    host: ENV.APP_PUBLIC_API_HOST as string,
+    timeout: ENV.APP_PUBLIC_API_TIMEOUT as string,
+    version: ENV.APP_PUBLIC_API_TIMEOUT as string,
   },
 };
 

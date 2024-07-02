@@ -1,28 +1,33 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["ES6", "ES2017"],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "baseUrl": ".",
-    "typeRoots": ["./node_modules/@types", "./src/types/"],
-    "types": ["node"],
     "paths": {
       "src/redux/modules/*": ["src/redux/modules/*"],
       "src/contexts/*": ["src/contexts/*"],
       "src/locale/*": ["src/locale/*"],
       "src/styles/*": ["src/styles/*"],
-      "src/utils/*": ["src/utils/*"]
+      "src/utils/*": ["src/utils/*"],
+      "src/types/*": ["src/types/*"]
     },
-    "jsx": "react"
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "types": ["styled-components-react-native", "node"],
+    "jsx": "preserve",
+    "incremental": true,
+    "strictNullChecks": true
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "babel.config.js", "metro.config.js"]
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js"],
+  "extends": "@react-native/typescript-config/tsconfig.json"
 }
