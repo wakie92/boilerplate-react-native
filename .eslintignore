@@ -1,0 +1,6 @@
+build/
+node_modules/
+package-lock.json
+shim.js
+babel.config.js
+metro.config.js
