@@ -25,7 +25,8 @@ module.exports = {
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: 'tsconfig.json',
+    project: true, // change
+    tsconfigRootDir: __dirname,
     createDefaultProgram: true,
     ecmaVersion: 2018,
     sourceType: 'module',
@@ -70,6 +71,25 @@ module.exports = {
     'react/jsx-curly-newline': 'off', // Conflicts with prettier
     '@typescript-eslint/no-unused-vars': ['error'],
     'security/detect-non-literal-regexp': 'off',
+    'import/order': [
+      'error',
+      {
+        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type'],
+        pathGroups: [
+          {
+            pattern: 'src/**',
+            group: 'external',
+            position: 'after',
+          },
+        ],
+        pathGroupsExcludedImportTypes: ['react'],
+        alphabetize: {
+          // order: 'asc',
+          caseInsensitive: true,
+        },
+        'newlines-between': 'always',
+      },
+    ],
   },
   settings: {
     'import/parsers': {

@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import type { PropsWithChildren } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -16,7 +15,6 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-
 import {
   Colors,
   DebugInstructions,
@@ -25,6 +23,8 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+import type { PropsWithChildren } from 'react';
+import './src/styles/global.css';
 const styles = StyleSheet.create({
   sectionContainer: {
     marginTop: 32,
@@ -92,6 +92,7 @@ function App(): React.JSX.Element {
       <ScrollView contentInsetAdjustmentBehavior="automatic" style={backgroundStyle}>
         <Header />
         <View
+          className="text-2xl text-black  dark:text-white"
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}
