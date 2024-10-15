@@ -71,6 +71,7 @@ module.exports = {
     'react/jsx-curly-newline': 'off', // Conflicts with prettier
     '@typescript-eslint/no-unused-vars': ['error'],
     'security/detect-non-literal-regexp': 'off',
+    'react/react-in-jsx-scope': 'off',
     'import/order': [
       'error',
       {
