@@ -1,9 +1,10 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import axiosRetry, { exponentialDelay } from 'axios-retry';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep } from 'es-toolkit';
+
+import localeErrorMsg from 'src/locales/localeErrorMsg';
 
 import constants from '../constants';
-import localeErrorMsg from 'src/locales/localeErrorMsg';
 
 export const authenticationFailed = 'authentication_fail';
 export const clientTokenStorageId = 'clientTokens';

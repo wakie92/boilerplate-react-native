@@ -22,12 +22,12 @@
       "src/types/*": ["src/types/*"]
     },
     "typeRoots": ["./node_modules/@types", "./src/types"],
-    "types": ["styled-components-react-native", "node"],
+    "types": ["node"],
     "jsx": "preserve",
     "incremental": true,
     "strictNullChecks": true
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts", ".eslintrc.js"],
   "exclude": ["node_modules", "babel.config.js", "metro.config.js"],
   "extends": "@react-native/typescript-config/tsconfig.json"
 }
