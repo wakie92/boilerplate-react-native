@@ -12,7 +12,6 @@ module.exports = {
     'plugin:react/recommended',
     'plugin:prettier/recommended',
     'plugin:security/recommended',
-    'plugin:lodash-fp/recommended',
     'plugin:jsx-a11y/recommended',
     'plugin:import/typescript',
     'plugin:@typescript-eslint/eslint-recommended',
@@ -33,7 +32,6 @@ module.exports = {
   },
   plugins: [
     'import',
-    'lodash-fp',
     'no-secrets',
     'prettier',
     'react-hooks',

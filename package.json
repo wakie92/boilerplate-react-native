@@ -69,7 +69,6 @@
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-jsx-a11y": "^6.7.1",
-    "eslint-plugin-lodash-fp": "^2.2.0-a1",
     "eslint-plugin-no-secrets": "^0.8.9",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.26.1",
