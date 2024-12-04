@@ -1,92 +1,66 @@
-/* eslint-disable no-console */
-import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig } from 'axios';
-import { Platform } from 'react-native';
-import qs from 'qs';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import axiosRetry, { exponentialDelay } from 'axios-retry';
-import { cloneDeep } from 'lodash-es';
-import DeviceInfo from 'react-native-device-info';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { cloneDeep } from 'es-toolkit';
+
+import localeErrorMsg from 'src/locales/localeErrorMsg';
 
 import constants from '../constants';
-import urls from '../urls';
-import Emitter from '../emitter';
-import localeErrorMsg from 'src/locale/localeErrorMsg';
 
-export const authenticationFailed = 'AuthenticationFailed';
+export const authenticationFailed = 'authentication_fail';
 export const clientTokenStorageId = 'clientTokens';
-export const temporaryTokenStorageId = 'clientTemporaryTokens';
 
-export const getIsReviewer = (email: string) => {
-  if (process.env.NODE_ENV !== 'production') {
-    return false;
-  } else {
-    if (email.includes('@plutusds.com')) {
-      return true;
-    }
-    return false;
-  }
+export interface IErrorData {
+  code: string;
+  detail: { query: string[] };
+  msg: string;
+}
+
+export type IErrorType = {
+  status: number;
+  data: IErrorData;
+  errorMsg: string;
 };
+const isNotProduction: boolean = process.env.NEXT_PUBLIC_APP_ENV !== 'production';
 
-const getUserAgent = async () => {
-  const userAgent = await DeviceInfo.getUserAgent();
-  const appVersion = DeviceInfo.getVersion();
-  const platform = Platform.OS;
-  const uniqueDeviceId = DeviceInfo.getUniqueId();
-  return `${userAgent} HanbitcoApp_${uniqueDeviceId}_${platform}_${appVersion}`;
-};
+const { API } = constants;
+const timeout = parseInt(API.timeout as string, 10);
 
-export const getAccessToken = async () => {
-  const accessToken = await AsyncStorage.getItem('accessToken');
-  return accessToken;
-};
-
-const { API, ENVIRONMENT } = constants;
-const { auth } = urls.api;
-const isNotProduction: boolean = ENVIRONMENT !== 'PRODUCTION';
-
-const timeout: number = parseInt(constants.API.timeout, 10);
-
-// eslint-disable-next-line no-secrets/no-secrets
-// Todo: AxiosRequestConfig<any> 대신 제네릭으로 주입하는 방법
 const requestAPI: AxiosInstance = axios.create({
-  baseURL: `${API.host}/api/${API.host}`,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  paramsSerializer: params => qs.stringify(params, { arrayFormat: 'repeat' }),
+  baseURL: `${API.host}api`,
+  headers: { 'Content-Type': 'application/json' },
   timeout,
 });
 
-export const requestGetAPI = <T, D>(config?: AxiosRequestConfig<D>) =>
-  requestAPI.get<T, AxiosResponse<T>, D>(config.url, config);
-
-export const requestPostAPI = <T, D>(config?: AxiosRequestConfig<D>) =>
-  requestAPI.post<T, AxiosResponse<T>, D>(config.url, config.data, config);
-
-export const requestPutAPI = <T, D>(config?: AxiosRequestConfig<D>) =>
-  requestAPI.put<T, AxiosResponse<T>, D>(config.url, config.data, config);
-
-export const requestDeleteAPI = <T, D>(config?: AxiosRequestConfig<D>) =>
-  requestAPI.delete<T, AxiosResponse<T>, D>(config.url, config);
-
-export const requestPatchAPI = <T, D>(config?: AxiosRequestConfig<D>) =>
-  requestAPI.patch<T, AxiosResponse<T>, D>(config.url, config.data, config);
-
 axiosRetry(axios, { retryDelay: exponentialDelay });
+export const requestGetAPI = <T, D>(url: string, config: AxiosRequestConfig<D>) =>
+  requestAPI.get<T, AxiosResponse<T>, D>(url as string, config);
+
+export const requestPostAPI = <T, D>(url: string, config: AxiosRequestConfig<D>) =>
+  requestAPI.post<T, AxiosResponse<T>, D>(url, config.data, config);
+
+export const requestPutAPI = <T, D>(url: string, config: AxiosRequestConfig<D>) =>
+  requestAPI.put<T, AxiosResponse<T>, D>(url, config.data, config);
+
+export const requestDeleteAPI = <T, D>(url: string, config: AxiosRequestConfig<D>) =>
+  requestAPI.delete<T, AxiosResponse<T>, D>(url, config);
+
+export const requestPatchAPI = <T, D>(url: string, config: AxiosRequestConfig<D>) =>
+  requestAPI.patch<T, AxiosResponse<T>, D>(url, config.data, config);
+
 // Request interceptor
 requestAPI.interceptors.request.use(
   async (config: AxiosRequestConfig) => {
     try {
-      const configReq = cloneDeep(config);
-      const userAgent = await getUserAgent();
-      configReq.headers['User-Agent'] = userAgent;
-
-      if (config.useFormData) {
-        configReq.headers['Content-Type'] = 'multipart/form-data';
+      if (isNotProduction) {
+        console.debug('requestAPI - interceptors.req sent config: ', config);
       }
 
-      if (isNotProduction) {
-        console.log('requestAPI - interceptors.req sent config: ', configReq);
+      const configReq = cloneDeep(config);
+
+      if (config.useFormData) {
+        configReq.headers = {
+          ['Content-Type']: 'multipart/form-data',
+        };
       }
 
       return configReq;
@@ -107,43 +81,35 @@ requestAPI.interceptors.response.use(
   async (res: AxiosResponse) => {
     try {
       if (isNotProduction) {
-        console.log('requestAPI - interceptors.res sent res: ', res);
+        console.debug('requestAPI - interceptors.res sent res: ', res);
       }
-
-      const copiedRes = cloneDeep(res);
-      const { config, data } = copiedRes;
-
-      if (auth.login === config.url) {
-        if (!data.is_pincode_set || data.is_migrated) {
-          copiedRes.unverifiedUser = true;
-        }
-      }
-
-      return copiedRes;
+      return res;
     } catch (error) {
       console.error(`requestAPI - interceptors.res res: ${res} - error: ${error}`);
       return res;
     }
   },
-  async error => {
+  async (error: AxiosError<{ code: string; detail: { query: string[] }; msg: string }>) => {
     if (isNotProduction) {
-      console.error('requestAPI - interceptors.res error: ', { error });
+      console.debug('requestAPI - interceptors.res error: ', error && error.response);
     }
-    const errorMsgList = localeErrorMsg;
-    let errorMsg = localeErrorMsg.default;
 
-    const { response, config } = error;
-    const { data } = response;
+    const { response } = error;
+
+    const errorMsgList = localeErrorMsg;
+
+    let errorMsg = errorMsgList['errorMsg.default'];
+
+    if (error.code === 'ERR_NETWORK') {
+      // errorMsg = errorMsgList.errorMsg.networkError;
+      return;
+    }
+
     try {
-      if (response) {
-        if (response.status === 408 || error.code === 'ECONNABORTED') {
-          errorMsg = errorMsgList.timeout;
-        } else if (data.error_code && data?.error_class === authenticationFailed) {
-          Emitter.emit(authenticationFailed);
-        } else if (data.error_code && errorMsgList[`${data.error_class}_${data.error_code}`]) {
-          errorMsg = errorMsgList[`${data.error_class}_${data.error_code}`];
-        } else if (data.error_code && !errorMsgList[`${data.error_class}_${data.error_code}`]) {
-          errorMsg = `${errorMsg} -> 에러코드: ${data.error_class}(${data.error_code})`;
+      if (response && response.data) {
+        const { code } = response.data;
+        if (code && errorMsgList[`${code}`]) {
+          errorMsg = errorMsgList[`${code}`];
         }
       }
     } catch (e) {
@@ -153,10 +119,8 @@ requestAPI.interceptors.response.use(
     // eslint-disable-next-line prefer-promise-reject-errors
     return Promise.reject({
       status: response ? response.status : 400,
-      data: response ? response.data : {},
-      config,
+      data: response?.data,
       errorMsg,
-      error: error.message,
     });
   },
 );

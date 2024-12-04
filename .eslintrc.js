@@ -12,7 +12,6 @@ module.exports = {
     'plugin:react/recommended',
     'plugin:prettier/recommended',
     'plugin:security/recommended',
-    'plugin:lodash-fp/recommended',
     'plugin:jsx-a11y/recommended',
     'plugin:import/typescript',
     'plugin:@typescript-eslint/eslint-recommended',
@@ -25,14 +24,14 @@ module.exports = {
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: 'tsconfig.json',
+    project: true, // change
+    tsconfigRootDir: __dirname,
     createDefaultProgram: true,
     ecmaVersion: 2018,
     sourceType: 'module',
   },
   plugins: [
     'import',
-    'lodash-fp',
     'no-secrets',
     'prettier',
     'react-hooks',
@@ -70,6 +69,26 @@ module.exports = {
     'react/jsx-curly-newline': 'off', // Conflicts with prettier
     '@typescript-eslint/no-unused-vars': ['error'],
     'security/detect-non-literal-regexp': 'off',
+    'react/react-in-jsx-scope': 'off',
+    'import/order': [
+      'error',
+      {
+        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type'],
+        pathGroups: [
+          {
+            pattern: 'src/**',
+            group: 'external',
+            position: 'after',
+          },
+        ],
+        pathGroupsExcludedImportTypes: ['react'],
+        alphabetize: {
+          // order: 'asc',
+          caseInsensitive: true,
+        },
+        'newlines-between': 'always',
+      },
+    ],
   },
   settings: {
     'import/parsers': {

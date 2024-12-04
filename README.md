@@ -14,13 +14,12 @@
   - Android Studio (https://developer.android.com/studio)
 - Eslint linting
 
-## Create new project
-
-- Change all of the app name is already set to new project name
-  - File name (ex: ios/feMonopolyApp -> ios/{NEW_PROJECT_NAME})
-  - Name (ex: package.json - "name": "feMonopolyApp" -> "name": "{NEW_PROJECT_NAME}")
-
 ## Init
+
+```
+# Rename the project
+- npx react-native-rename@latest "NEW_PROJECT_NAME"
+```
 
 ```
 # On Project Root
@@ -71,8 +70,7 @@ export PATH=$PATH:$ANDROID_SDK_ROOT/tools export PATH=$PATH:$ANDROID_SDK_ROOT/to
 
 # Run
 
-$ source ~/.zshrc
-
 ```
+$ source ~/.zshrc
 
 ```
